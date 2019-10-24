@@ -1,10 +1,10 @@
 package main
 
 import (
-	"log"
+	"fmt"
 	"net"
-	"net/http"
 	"net/rpc"
+	"net/rpc/jsonrpc"
 )
 
 type HouseDAO struct {
@@ -45,8 +45,38 @@ type Args struct {
 
 type House int
 
+func (t *House) GetHouse(args Args, reply *HouseDAO) error {
+	fmt.Println("GetHouse")
+	*reply = houses[args.Id-1]
+	return nil
+}
+
+func (t *House) GetHouses(args Args, reply *[]HouseDAO) error {
+	fmt.Println("GetHouses")
+	*reply = houses
+	return nil
+}
+
 func main() {
-	/**
-    TO DO
-    **/
+	house := new(House)
+
+	server := rpc.NewServer()
+	server.Register(house)
+
+	server.HandleHTTP(rpc.DefaultRPCPath, rpc.DefaultDebugPath)
+
+	listenning, e := net.Listen("tcp", ":1234")
+	if e != nil {
+		fmt.Println(e.Error())
+	}
+	defer listenning.Close() // Lancé à la fin de la fonction
+	for {
+		connection, e := listenning.Accept()
+		if e != nil {
+			fmt.Println(e.Error())
+		}
+		lol := jsonrpc.NewServerCodec(connection)
+		server.ServeCodec(lol)
+	}
+
 }

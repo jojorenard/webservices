@@ -1,8 +1,9 @@
 package main
 
 import (
-	"log"
-	"net/rpc"
+	"fmt"
+	"net"
+	"net/rpc/jsonrpc"
 )
 
 type HouseDAO struct {
@@ -44,7 +45,24 @@ type Args struct {
 type House int
 
 func main() {
-	/**
-	TO DO
-	**/
+	connection, erreur := net.Dial("tcp", "localhost:1234")
+	if erreur != nil {
+		fmt.Println(erreur.Error())
+	}
+	defer connection.Close()
+
+	args := Args{1}
+	var reply []HouseDAO
+
+	client := jsonrpc.NewClient(connection)
+
+	for i := 0; i < 1; i++ {
+		erreur = client.Call("House.GetHouses", args, &reply)
+		if erreur != nil {
+			fmt.Println(erreur.Error())
+		}
+		fmt.Printf("House: ")
+		fmt.Println(reply)
+
+	}
 }
