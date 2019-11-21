@@ -1,6 +1,6 @@
 package org.polytech;
 
-import io.spring.guides.gs_producing_web_service.Book;
+//import io.spring.guides.gs_producing_web_service.Book;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -37,5 +37,9 @@ public class BookRepository {
 
     public Book findBook(int id) {
         return books.get(id);
+    }
+
+    public Map<Integer, Book> findAllBooks(){
+        return books;
     }
 }
